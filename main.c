@@ -212,7 +212,7 @@ win32_custom_title_bar_example_window_callback(
       int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
       int padding = GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
 
-      NCCALCSIZE_PARAMS* params = (void *)l_param;
+      NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS *)l_param;
       RECT* requested_client_rect = params->rgrc;
 
       requested_client_rect->right -= frame_x + padding;
