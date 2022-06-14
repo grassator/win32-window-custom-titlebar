@@ -369,7 +369,7 @@ win32_custom_title_bar_example_window_callback(
       // Draw window title
       LOGFONT logical_font;
       HFONT old_font = NULL;
-      if (SUCCEEDED(GetThemeSysFont(theme, TMT_CAPTIONFONT, &logical_font))) {
+      if (SUCCEEDED(SystemParametersInfoForDpi(SPI_GETICONTITLELOGFONT, sizeof(logical_font), &logical_font, false, dpi))) {
         HFONT theme_font = CreateFontIndirect(&logical_font);
         old_font = (HFONT)SelectObject(hdc, theme_font);
       }
