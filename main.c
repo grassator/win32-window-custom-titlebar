@@ -108,6 +108,8 @@ win32_titlebar_rect(
 
 // Set this to 0 to remove the fake shadow painting
 #define WIN32_FAKE_SHADOW_HEIGHT 1
+// The offset of the 2 rectangles of the maximized window button
+#define WIN32_MAXIMIZED_RECTANGLE_OFFSET 2
 
 static RECT
 win32_fake_shadow_rect(
@@ -305,7 +307,6 @@ win32_custom_title_bar_example_window_callback(
 
       // Title Bar Background
       FillRect(hdc, &title_bar_rect, title_bar_brush);
-      DeleteObject(title_bar_brush);
 
       COLORREF title_bar_item_color = has_focus ? RGB(33, 33, 33) : RGB(127, 127, 127);
 
@@ -330,7 +331,8 @@ win32_custom_title_bar_example_window_callback(
       }
 
       { // Maximize button
-        if (title_bar_hovered_button == CustomTitleBarHoveredButton_Maximize) {
+        bool const is_hovered = title_bar_hovered_button == CustomTitleBarHoveredButton_Maximize;
+        if (is_hovered) {
           FillRect(hdc, &button_rects.maximize, title_bar_hover_brush);
         }
         RECT icon_rect = {0};
@@ -339,6 +341,16 @@ win32_custom_title_bar_example_window_callback(
         win32_center_rect_in_rect(&icon_rect, &button_rects.maximize);
         SelectObject(hdc, button_icon_pen);
         SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+        if (win32_window_is_maximized(handle)) {
+          // Draw the maximized icon
+          Rectangle(hdc,
+            icon_rect.left + WIN32_MAXIMIZED_RECTANGLE_OFFSET,
+            icon_rect.top - WIN32_MAXIMIZED_RECTANGLE_OFFSET,
+            icon_rect.right + WIN32_MAXIMIZED_RECTANGLE_OFFSET,
+            icon_rect.bottom - WIN32_MAXIMIZED_RECTANGLE_OFFSET
+          );
+          FillRect(hdc, &icon_rect, is_hovered ? title_bar_hover_brush : title_bar_brush);
+        }
         Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
       }
 
@@ -364,7 +376,7 @@ win32_custom_title_bar_example_window_callback(
       DeleteObject(title_bar_hover_brush);
       DeleteObject(button_icon_brush);
       DeleteObject(button_icon_pen);
-
+      DeleteObject(title_bar_brush);
 
       // Draw window title
       LOGFONT logical_font;
