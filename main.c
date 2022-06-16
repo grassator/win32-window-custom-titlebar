@@ -260,6 +260,10 @@ win32_custom_title_bar_example_window_callback(
           return hit;
         }
       }
+      // Check if hover button is on maximize to support SnapLayout on Windows 11
+      if (title_bar_hovered_button == CustomTitleBarHoveredButton_Maximize) {
+        return HTMAXBUTTON;
+      }
 
       // Looks like adjustment happening in NCCALCSIZE is messing with the detection
       // of the top hit area so manually fixing that.
