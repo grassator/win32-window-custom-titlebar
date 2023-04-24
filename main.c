@@ -8,6 +8,17 @@
 
 #include <stdbool.h>
 
+
+// These are defined in <windowsx.h> but we don't want to pull in whole header
+// And we need them because coordinates are signed when you have multi-monitor setup.
+#ifndef GET_X_PARAM
+#define GET_X_PARAM(lp) ((int)(short)LOWORD(lp))
+#endif
+
+#ifndef GET_Y_PARAM
+#define GET_Y_PARAM(lp) ((int)(short)HIWORD(lp))
+#endif
+
 static LRESULT
 win32_custom_title_bar_example_window_callback(
   HWND handle,
@@ -273,8 +284,8 @@ win32_custom_title_bar_example_window_callback(
       int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
       int padding = GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
       POINT cursor_point = {0};
-      cursor_point.x = LOWORD(l_param);
-      cursor_point.y = HIWORD(l_param);
+      cursor_point.x = GET_X_PARAM(l_param);
+      cursor_point.y = GET_Y_PARAM(l_param);
       ScreenToClient(handle, &cursor_point);
       if (cursor_point.y > 0 && cursor_point.y < frame_y + padding) {
         return HTTOP;
