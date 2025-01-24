@@ -250,16 +250,12 @@ win32_custom_title_bar_example_window_callback(
       return 0;
     }
     case WM_CREATE: {
-      RECT size_rect;
-      GetWindowRect(handle, &size_rect);
-
       // Inform the application of the frame change to force redrawing with the new
       // client area that is extended into the title bar
       SetWindowPos(
         handle, NULL,
-        size_rect.left, size_rect.top,
-        size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
-        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+        0, 0, 0, 0,
+        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER
       );
       break;
     }
