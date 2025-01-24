@@ -96,6 +96,17 @@ win32_dpi_scale(
   return (int)((float)value * dpi / 96);
 }
 
+static void
+set_menu_item_state(
+  HMENU menu,
+  MENUITEMINFO* menuItemInfo,
+  UINT item,
+  bool enabled
+) {
+  menuItemInfo->fState = enabled ? MF_ENABLED : MF_DISABLED;
+  SetMenuItemInfo(menu, item, false, menuItemInfo);
+}
+
 // Adopted from:
 // https://github.com/oberth/custom-chrome/blob/master/source/gui/window_helper.hpp#L52-L64
 static RECT
@@ -506,6 +517,27 @@ win32_custom_title_bar_example_window_callback(
         int mode = win32_window_is_maximized(handle) ? SW_NORMAL : SW_MAXIMIZE;
         ShowWindow(handle, mode);
         return 0;
+      }
+      return DefWindowProc(handle, message, w_param, l_param);
+    }
+    case WM_NCRBUTTONUP: {
+      if (w_param == HTCAPTION) {
+        BOOL const isMaximized = IsZoomed(handle);
+        MENUITEMINFO menu_item_info = {
+          .cbSize = sizeof(menu_item_info),
+          .fMask = MIIM_STATE
+        };
+        HMENU const sys_menu = GetSystemMenu(handle, false);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_RESTORE, isMaximized);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_MOVE, !isMaximized);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_SIZE, !isMaximized);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_MINIMIZE, true);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_MAXIMIZE, !isMaximized);
+        set_menu_item_state(sys_menu, &menu_item_info, SC_CLOSE, true);
+        BOOL const result = TrackPopupMenu(sys_menu, TPM_RETURNCMD, GET_X_PARAM(l_param), GET_Y_PARAM(l_param), 0, handle, NULL);
+        if (result != 0) {
+          PostMessage(handle, WM_SYSCOMMAND, result, 0);
+        }
       }
       return DefWindowProc(handle, message, w_param, l_param);
     }
