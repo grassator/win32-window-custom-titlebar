@@ -255,7 +255,7 @@ win32_custom_title_bar_example_window_callback(
       SetWindowPos(
         handle, NULL,
         0, 0, 0, 0,
-        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER
+        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER
       );
       break;
     }
@@ -294,7 +294,8 @@ win32_custom_title_bar_example_window_callback(
       cursor_point.x = GET_X_PARAM(l_param);
       cursor_point.y = GET_Y_PARAM(l_param);
       ScreenToClient(handle, &cursor_point);
-      if (cursor_point.y > 0 && cursor_point.y < frame_y + padding) {
+      // We should not return HTTOP when hit-testing a maximized window 
+      if (!win32_window_is_maximized(handle) && cursor_point.y > 0 && cursor_point.y < frame_y + padding) {
         return HTTOP;
       }
 
