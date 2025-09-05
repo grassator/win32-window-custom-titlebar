@@ -19,6 +19,11 @@
 #define GET_Y_PARAM(lp) ((int)(short)HIWORD(lp))
 #endif
 
+static bool
+win32_window_is_maximized(
+  HWND handle
+);
+
 static LRESULT
 win32_custom_title_bar_example_window_callback(
   HWND handle,
@@ -125,6 +130,13 @@ win32_titlebar_rect(
     RECT rect;
     GetClientRect(handle, &rect);
     rect.bottom = rect.top + height;
+
+    if (win32_window_is_maximized(handle)) {
+      int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
+      rect.top -= frame_y;
+      rect.bottom -= frame_y;
+    }
+
     return rect;
 }
 
