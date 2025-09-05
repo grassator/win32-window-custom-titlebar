@@ -244,7 +244,7 @@ win32_custom_title_bar_example_window_callback(
       requested_client_rect->bottom -= frame_y + padding;
 
       if (win32_window_is_maximized(handle)) {
-        requested_client_rect->top += padding;
+        requested_client_rect->top += frame_y + padding;
       }
 
       return 0;
